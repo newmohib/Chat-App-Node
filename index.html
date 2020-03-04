@@ -105,8 +105,9 @@
 
    <script>
     var socket = io();
-   // socket.on('message', function(data){document.write(data)});                   //recive message from server by defalule events
-   //socket.on('testerEvent', function(data){document.write(data.description)});    // rceve message from server by custom events
-   socket.emit('clientEvent', 'Sent an event from the client!');                    //send message to server
+      socket.on('broadcast',function(data) {
+         document.body.innerHTML = '';
+         document.write(data.description);
+      });
  </script>
 </html>
