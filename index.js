@@ -9,12 +9,11 @@ app.get('/', function(req, res) {
 var clients = 0;
 io.on('connection', function(socket) {
    clients++;
-   console.log("clients 1 :",clients);
-   io.sockets.emit('broadcast',{ description: clients + ' clients connected!'});
-   
+   socket.emit('newclientconnect',{ description: 'Hey, welcome!'});
+   socket.broadcast.emit('newclientconnect',{ description: clients + ' clients connected!'})
    socket.on('disconnect', function () {
       clients--;
-      io.sockets.emit('broadcast',{ description: clients + ' clients connected!'});
+      socket.broadcast.emit('newclientconnect',{ description: clients + ' clients connected!'})
    });
 });
 
