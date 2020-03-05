@@ -104,8 +104,8 @@
    <body>Hello world</body>
 
    <script>
-    var socket = io('/my-namespace');
-      socket.on('welcome',function(data) {
+    var socket = io();
+    socket.on('connectToRoom',function(data) {
          document.body.innerHTML = '';
          document.write(data);
       });
