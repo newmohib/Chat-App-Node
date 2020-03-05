@@ -104,10 +104,10 @@
    <body>Hello world</body>
 
    <script>
-    var socket = io();
-    socket.on('newclientconnect',function(data) {
+    var socket = io('/my-namespace');
+      socket.on('welcome',function(data) {
          document.body.innerHTML = '';
-         document.write(data.description);
+         document.write(data);
       });
  </script>
 </html>
