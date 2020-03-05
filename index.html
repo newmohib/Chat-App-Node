@@ -1,45 +1,36 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <title>Hello world</title>
-   </head>
-   
-   <script src = "/socket.io/socket.io.js"></script>
-   <script>
-      var socket = io();
-      function setUsername() {
-         socket.emit('setUsername', document.getElementById('name').value);
-      };
-      var user;
-      socket.on('userExists', function(data) {
-         document.getElementById('error-container').innerHTML = data;
-      });
-      socket.on('userSet', function(data) {
-         user = data.username;
-         document.body.innerHTML = '<input type = "text" id = "message">\
-         <button type = "button" name = "button" onclick = "sendMessage()">Send</button>\
-         <div id = "message-container"></div>';
-      });
-      function sendMessage() {
-         var msg = document.getElementById('message').value;
-         if(msg) {
-            socket.emit('msg', {message: msg, user: user});
-         }
-      }
-      socket.on('newmsg', function(data) {
-         if(user) {
-            document.getElementById('message-container').innerHTML += '<div><b>' + 
-               data.user + '</b>: ' + data.message + '</div>'
-         }
-      })
-   </script>
-   
-   <body>
-      <div id = "error-container"></div>
-      <input id = "name" type = "text" name = "name" value = "" 
-         placeholder = "Enter your name!">
-      <button type = "button" name = "button" onclick = "setUsername()">
-         Let me chat!
-      </button>
-   </body>
+    <head>
+        <meta charset="utf-8" />
+        <title>Socket.io</title>
+    </head>
+ 
+    <body>
+        <h1>Communicating with socket.io!</h1>
+
+        <p><input type="button" value="Poke the server" id="poke" /></p>
+
+
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io.connect('http://localhost:4000');
+
+            // The visitor is asked for their username...
+            var username = prompt('What\'s your username?');
+            
+            // It's sent with the signal "little_newbie" (to differentiate it from "message")
+            socket.emit('little_newbie', username);
+
+            // A dialog box is displayed when the server sends us a "message"
+            socket.on('message', function(message) {
+                alert('The server has a message for you: ' + message);
+            })
+
+            // When the button is clicked, a "message" is sent to the server
+            $('#poke').click(function () {
+                socket.emit('message', 'Hi server, how are you?');
+            })
+        </script>
+    </body>
 </html>

@@ -1,30 +1,34 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var http = require('http');
+var fs = require('fs');
 
-app.get('/', function(req, res) {
-   res.sendFile(__dirname + '/index.html');
+// Loading the file index.html displayed to the client
+var server = http.createServer(function(req, res) {
+    fs.readFile('./index.html', 'utf-8', function(error, content) {
+        res.writeHead(200, {"Content-Type": "text/html"});
+        res.end(content);
+    });
 });
-users = [];
-io.on('connection', function(socket) {
-   console.log('A user connected');
-   socket.on('setUsername', function(data) {
-      console.log("username : ",data);
-      
-      if(users.indexOf(data) > -1) {
-         socket.emit('userExists', data + ' username is taken! Try some other username.');
-      } else {
-         users.push(data);
-         socket.emit('userSet', {username: data});
-      }
-   });
-   
-   socket.on('msg', function(data) {
-      //Send message to everyone
-      console.log("new msg",data);
-      io.sockets.emit('newmsg', data);
-   })
+
+// Loading socket.io
+var io = require('socket.io').listen(server);
+
+io.sockets.on('connection', function (socket, username) {
+    // When the client connects, they are sent a message
+    socket.emit('message', 'You are connected!');
+    // The other clients are told that someone new has arrived
+    socket.broadcast.emit('message', 'Another client has just connected!');
+
+    // As soon as the username is received, it's stored as a session variable
+    socket.on('little_newbie', function(username) {
+        socket.username = username;
+    });
+
+    // When a "message" is received (click on the button), it's logged in the console
+    socket.on('message', function (message) {
+        // The username of the person who clicked is retrieved from the session variables
+        console.log(socket.username + ' is speaking to me! They\'re saying: ' + message);
+    }); 
 });
-http.listen(3000, function() {
-   console.log('listening on *:3000');
-});
+
+
+server.listen(4000);
