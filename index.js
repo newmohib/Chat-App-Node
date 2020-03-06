@@ -13,13 +13,17 @@ var server = http.createServer(function(req, res) {
 var io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function (socket, username) {
-    // When the client connects, they are sent a message
-    socket.emit('message', 'You are connected!');
+   
+    
+    
     // The other clients are told that someone new has arrived
     socket.broadcast.emit('message', 'Another client has just connected!');
 
     // As soon as the username is received, it's stored as a session variable
     socket.on('little_newbie', function(username) {
+        console.log("usrname:",username);
+         // When the client connects, they are sent a message
+        socket.emit('message', 'You are connected! '+username);
         socket.username = username;
     });
 
@@ -27,8 +31,9 @@ io.sockets.on('connection', function (socket, username) {
     socket.on('message', function (message) {
         // The username of the person who clicked is retrieved from the session variables
         console.log(socket.username + ' is speaking to me! They\'re saying: ' + message);
+        socket.broadcast.emit('message', socket.username +' '+ message);
     }); 
 });
 
 
-server.listen(4000);
+server.listen(3000);
